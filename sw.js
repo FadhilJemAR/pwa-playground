@@ -1,8 +1,9 @@
 const CACHE_NAME = "pwa-lab-v4";
 
 const ASSETS = [
-    "index.html",
-    "script.js"
+    "/",
+    "/index.html",
+    "/script.js"
 ];
 
 console.log("Service Worker: Didaftarkan");
