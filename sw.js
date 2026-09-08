@@ -1,35 +1,30 @@
-const CACHE_NAME = "pwa-lab-v4";
-
-const ASSETS = [
+const CACHE_NAME = "pwa-lab-v89";
+const ASSETS_PRECACHE = [
     "/",
     "/index.html",
     "/script.js"
+    
 ];
-
-console.log("Service Worker: Didaftarkan");
+const ASSETS_RUNTIMECACHE = [
+    "/Gambar.jpg",
+]
 
 self.addEventListener("install", (event) => {
-    console.log("Service Worker Diinstall")
     self.skipWaiting();
-    //Masukkan semua aset ke cache 
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then((cache) => {
-                console.log("Cache Baru dibuat: " + CACHE_NAME);
-                return cache.addAll(ASSETS);
+                return cache.addAll(ASSETS_PRECACHE);
             })
     );
 });
 
 self.addEventListener("activate", (event) => {
-    console.log("Mengaktifkan Service Worker Baru");
-    //Bersihkan cache lama
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
-                        console.log("Cache lama dihapus: " + cacheName);
                         return caches.delete(cacheName);
                     }
                 })
@@ -41,9 +36,16 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
     event.respondWith(
-            caches.match(event.request).then((response) => {
-                return response || fetch(event.request);
-            })
-     );
-    
+        caches.match(event.request).then(async (response) => {
+            if (response) return response;
+            const responsetry = await fetch(event.request);
+            if (ASSETS_RUNTIMECACHE.includes(new URL(event.request.url).pathname)) {
+                caches.open(CACHE_NAME)
+                    .then((cache) => {
+                        return cache.addAll(ASSETS_RUNTIMECACHE);
+                    })
+            }
+            return responsetry;
+        })
+    );
 });
