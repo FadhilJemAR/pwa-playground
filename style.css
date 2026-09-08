@@ -1,0 +1,9 @@
+div{
+    height:600vh;
+}
+
+img{
+    width: 50%;
+    height: 50%;
+    object-fit: cover;
+}
